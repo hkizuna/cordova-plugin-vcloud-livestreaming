@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="xwang.cordova.vcloud.livestreaming" version="0.0.1">
+  <name>VCloud Live Streaming</name>
+  <description>A cordova plugin, a JS version of VCloud Live Streaming SDK</description>
+  <license>MIT</license>
+  <keywords>cordova,vcloud,live streaming,video</keywords>
+  <repo>https://github.com/hkizuna/cordova-plugin-vcloud-livestreaming.git</repo>
+  <issue>https://github.com/hkizuna/cordova-plugin-vcloud-livestreaming/issues</issue>
+  <!-- required cordova version -->
+  <engines>
+    <engine name="cordova" version=">=3.9.2" />
+  </engines>
+  <!-- js module -->
+  <js-module src="www/livestreaming.js" name="LiveStreaming">
+    <clobbers target="LiveStreaming" />
+  </js-module>
+  <!-- ios -->
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="LiveStreaming">
+        <param name="ios-package" value="CDVLiveStreaming" />
+        <param name="onload" value="true" />
+      </feature>
+    </config-file>
+
+    <!-- plugin source code -->
+    <header-file src="src/ios/CDVLiveStreaming.h" />
+    <source-file src="src/ios/CDVLiveStreaming.m" />
+    <header-file src="src/ios/LiveStreamingViewController.h" />
+    <source-file src="src/ios/LiveStreamingViewController.m" />
+    <source-file src="src/ios/UIView+Toast.h" />
+    <source-file src="src/ios/UIView+Toast.m" />
+
+    <!-- Live Streaming -->
+    <header-file src="src/ios/libs/LSMediaCapture.h" />
+    <header-file src="src/ios/libs/nMediaLiveStreamingDefs.h" />
+    <source-file src="src/ios/libs/libLSMediaCapture.a" framework="true" />
+    <source-file src="src/ios/libs/libavdevice.a" framework="true" />
+    <source-file src="src/ios/libs/libavfilter.a" framework="true" />
+    <source-file src="src/ios/libs/libyuv.a" framework="true" />
+
+    <resource-file src="src/ios/res/CDVLiveStreaming.bundle" />
+
+    <!-- other required frameworks -->
+    <framework src="libz.1.tbd" />
+    <framework src="libbz2.tbd" />
+    <framework src="libiconv.tbd" />
+    <framework src="libstdc++.tbd" />
+    <framework src="AudioToolBox.framework" />
+    <framework src="AVFoundation.framework" />
+    <framework src="CFNetwork.framework" />
+    <framework src="CoreAudio.framework" />
+    <framework src="CoreGraphics.framework" />
+    <framework src="CoreMedia.framework" />
+    <framework src="CoreTelephony.framework" />
+    <framework src="CoreVideo.framework" />
+    <framework src="Foundation.framework" />
+    <framework src="OpenGLES.framework" />
+    <framework src="QuartzCore.framework" />
+    <framework src="SystemConfiguration.framework" />
+    <framework src="UIKit.framework" />
+    <framework src="VideoToolBox.framework" />
+  </platform>
+</plugin>
