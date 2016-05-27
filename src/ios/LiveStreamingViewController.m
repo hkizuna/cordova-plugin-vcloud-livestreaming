@@ -478,9 +478,7 @@ LSVideoStreamingQuality currentStreamingQuality = LS_VIDEO_QUALITY_SUPER;
   }
   else {
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"直播过程中无法选择推流品质" message:nil preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){}];
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){}];
-    [alertController addAction:cancelAction];
     [alertController addAction:okAction];
     [self presentViewController:alertController animated:YES completion:nil];
   }
