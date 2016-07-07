@@ -185,6 +185,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
                   mLSMediaCapture.stopLiveStreaming();
                 }
               })
+              .setNegativeButton("取消", null)
               .show();
           }
           else {
