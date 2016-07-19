@@ -10,6 +10,8 @@
 
 @implementation CDVLiveStreaming:CDVPlugin
 
+LiveStreamingViewController *streamingViewController;
+
 - (void)play:(CDVInvokedUrlCommand *)command
 {
   NSArray *arguments = [command arguments];
@@ -22,13 +24,29 @@
   NSString *title = [arguments objectAtIndex:1];
   NSDictionary *options = [arguments objectAtIndex:2];
 
-  LiveStreamingViewController *streamingViewController = [[LiveStreamingViewController alloc] initWithURL:url title:title andOptions:options];
+  streamingViewController = [[LiveStreamingViewController alloc] initWithURL:url title:title andOptions:options];
   if (streamingViewController == nil) {
     [self failWithCallbackId:command.callbackId withMessage:@"初始化错误"];
     return;
   }
 
-  [self.viewController presentViewController:streamingViewController animated:YES completion:nil];
+  [self.viewController presentViewController:streamingViewController animated:NO completion:^{
+    [self successWithCallbackId:command.callbackId withMessage:@"大丈夫"];
+  }];
+}
+
+- (void)channel:(CDVInvokedUrlCommand *)command
+{
+  NSArray *arguments = [command arguments];
+  if ([arguments count] != 2) {
+    [self failWithCallbackId:command.callbackId withMessage:@"参数错误"];
+    return;
+  }
+
+  NSString *name = [arguments objectAtIndex:0];
+  NSString *content = [arguments objectAtIndex:1];
+
+  [streamingViewController addChannelName:name andMessage:content];
   [self successWithCallbackId:command.callbackId withMessage:@"大丈夫"];
 }
 

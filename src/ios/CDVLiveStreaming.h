@@ -10,5 +10,6 @@
 @interface CDVLiveStreaming:CDVPlugin
 
 - (void)play:(CDVInvokedUrlCommand *)command;
+- (void)channel:(CDVInvokedUrlCommand *)command;
 
 @end

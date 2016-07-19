@@ -18,7 +18,15 @@
 #define LS_LiveStreaming_Started            @"LSLiveStreamingStarted"            // 直播推流已经开始
 #define LS_LiveStreaming_Finished           @"LSLiveStreamingFinished"           // 直播推流已经结束
 #define LS_LiveStreaming_Bad                @"LSLiveStreamingBad"                //直播推流状态不好，建议结束
+#define LS_AudioFile_eof                    @"LSAudioFileEof"            //当前audio文件播放结束
 
+
+/**
+ *  @brief 获取最新一帧视频截图后的回调
+ *
+ *  @param latestFrameImage 最新一帧视频截图
+ */
+typedef void(^LSFrameCaptureCompletionBlock)(UIImage *latestFrameImage);
 /**
  *  直播过程中发生错误的回调函数
  *
@@ -79,12 +87,12 @@
 @property(nonatomic,copy)NSString* pushUrl;
 
 /**
-*  直播推流之前，可以再次设置一下视频参数
-*  @param  videoResolution 采集分辨率
-*  @param  bitrate 推流码率 default会按照分辨率设置
-*  @param  fps     采集帧率 default ＝ 15
-*
-*/
+ *  直播推流之前，可以再次设置一下视频参数
+ *  @param  videoResolution 采集分辨率
+ *  @param  bitrate 推流码率 default会按照分辨率设置
+ *  @param  fps     采集帧率 default ＝ 15
+ *
+ */
 -(void)setVideoParameters:(LSVideoStreamingQuality)videoResolution
                   bitrate:(int)bitrate
                       fps:(int)fps
@@ -106,13 +114,13 @@
 -(void)stopLiveStream:(void(^)(NSError *))completionBlock;
 
 /**
- *  重启开始视频推流 
+ *  重启开始视频推流
  *  @warning 需要先启动推流startLiveStreamWithError，开启音视频推流，才可以中断其中视频推流，重启视频推流，
  */
 - (void)resumeVideoLiveStream;
 
 /**
- *  中断视频推流 
+ *  中断视频推流
  *  @warning 需要先启动推流startLiveStreamWithError，开启音视频推流，才可以中断其中视频推流，重启视频推流，
  */
 - (void)pauseVideoLiveStream;
@@ -159,10 +167,10 @@
 @property (nonatomic, assign) CGFloat zoomScale;
 
 /**
-*  摄像头变焦功能属性：拉伸值变化回调block
-*
-*  摄像头响应uigesture事件，而改变了拉伸系数反馈
-*/
+ *  摄像头变焦功能属性：拉伸值变化回调block
+ *
+ *  摄像头响应uigesture事件，而改变了拉伸系数反馈
+ */
 @property (nonatomic,copy) void (^onZoomScaleValueChanged)(CGFloat value);
 
 
@@ -175,15 +183,23 @@
  */
 
 - (void) addWaterMark: (UIImage*) image
-                        rect: (CGRect) rect
-                        location: (LSWaterMarkLocation) location;
+                 rect: (CGRect) rect
+             location: (LSWaterMarkLocation) location;
 /**
  *  得到直播过程中的统计信息
  *
- *  @param statistics 统计信息结构体 
+ *  @param statistics 统计信息结构体
  *
  */
 @property (nonatomic,copy) void (^onStatisticInfoGot)(LSStatistics* statistics);
+
+/**
+ *  获取视频截图，
+ *
+ *  @param  LSFrameCaptureCompletionBlock 获取最新一幅视频图像的回调
+ *
+ */
+- (void)snapShotWithCompletionBlock:(LSFrameCaptureCompletionBlock)completionBlock;
 
 /**
  *  设置trace 的level
@@ -191,6 +207,16 @@
  *  @param loglevl trace 信息的级别
  */
 -(void)setTraceLevel:(LSMediaLog)logLevel;
+
+/**
+ *  设置是否输出到文件，
+ *
+ *  默认存放在／library/cache
+ *
+ *  @param  isToFile   是否输出到文件，默认是输出到文件，当为false时，则不输出到文件
+ */
+- (void)isLogToFile:(BOOL)isToFile;
+
 /**
  *  获取当前sdk的版本号
  *

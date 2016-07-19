@@ -16,5 +16,6 @@
 @property(nonatomic, strong) NSDictionary *options;
 
 - (id)initWithURL:(NSString *)url title:(NSString *)title andOptions:(NSDictionary *)options;
+- (void)addChannelName:(NSString *)name andMessage:(NSString *)message;
 
 @end

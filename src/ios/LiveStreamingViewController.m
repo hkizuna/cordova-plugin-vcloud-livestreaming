@@ -7,6 +7,7 @@
 
 #import "LiveStreamingViewController.h"
 #import "UIView+Toast.h"
+#import <Photos/Photos.h>
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
@@ -163,6 +164,10 @@ LSVideoStreamingQuality presentQuality = LS_VIDEO_QUALITY_SUPER;
 @property (nonatomic, strong) UIButton *flashButton;
 @property (nonatomic, strong) UIButton *cameraButton;
 @property (nonatomic, strong) UIButton *qualityButton;
+@property (nonatomic, strong) UIButton *micButton;
+@property (nonatomic, strong) UIButton *channelButton;
+@property (nonatomic, strong) UIButton *snapshotButton;
+@property (nonatomic, strong) UITextView *channelTextView;
 @property (nonatomic, strong) LSMediaCapture *mediaCapture;
 
 @end
@@ -177,6 +182,8 @@ BOOL onAir = NO;
 BOOL flashOn = NO;
 BOOL audioOn = YES;
 BOOL videoOn = YES;
+BOOL micOn = YES;
+BOOL channelOn = YES;
 
 LSVideoStreamingQuality currentStreamingQuality = LS_VIDEO_QUALITY_SUPER;
 
@@ -189,6 +196,16 @@ LSVideoStreamingQuality currentStreamingQuality = LS_VIDEO_QUALITY_SUPER;
     self.options = options;
   }
   return self;
+}
+
+- (void)addChannelName:(NSString *)name andMessage:(NSString *)message
+{
+  NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithAttributedString:self.channelTextView.attributedText];
+  NSMutableAttributedString *newAttributedText = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@: %@\n", name, message] attributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}];
+  [newAttributedText addAttribute:NSForegroundColorAttributeName value:UIColorFromRGB(0x28ECFD) range:NSMakeRange(0, name.length)];
+  [attributedText appendAttributedString:newAttributedText];
+  self.channelTextView.attributedText = attributedText;
+  [self.channelTextView scrollRangeToVisible:NSMakeRange(0, self.channelTextView.attributedText.length - 1)];
 }
 
 - (void)loadView
@@ -214,17 +231,38 @@ LSVideoStreamingQuality currentStreamingQuality = LS_VIDEO_QUALITY_SUPER;
 
   // back button
   self.backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  [self.backButton setImage:[UIImage imageNamed:@"navi_back"] forState:UIControlStateNormal];
+  [self.backButton setTitle:@"完成" forState:UIControlStateNormal];
   self.backButton.frame = CGRectMake(0, 20, 44, 44);
   [self.backButton addTarget:self action:@selector(onClickBack:) forControlEvents:UIControlEventTouchUpInside];
   [self.topControlView addSubview:self.backButton];
 
   // title label
-  self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, screenWidth, 44)];
+  self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(44 + 12.5, 20, screenWidth - 198 - 12.5, 44)];
   self.titleLabel.text = self.streamingTitle;
-  self.titleLabel.textAlignment = NSTextAlignmentCenter;
+  self.titleLabel.textAlignment = NSTextAlignmentLeft;
   self.titleLabel.textColor = [UIColor whiteColor];
   [self.topControlView addSubview:self.titleLabel];
+
+  // flash button
+  self.flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  [self.flashButton setImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-bolt"] forState:UIControlStateNormal];
+  self.flashButton.frame = CGRectMake(screenWidth - 198, 20, 44, 44);
+  [self.flashButton addTarget:self action:@selector(onClickCameraFlash:) forControlEvents:UIControlEventTouchUpInside];
+  [self.topControlView addSubview:self.flashButton];
+
+  // camera button
+  self.cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  [self.cameraButton setImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-reverse-camera"] forState:UIControlStateNormal];
+  self.cameraButton.frame = CGRectMake(screenWidth - 132, 20, 44, 44);
+  [self.cameraButton addTarget:self action:@selector(onClickSwitchCamera:) forControlEvents:UIControlEventTouchUpInside];
+  [self.topControlView addSubview:self.cameraButton];
+
+  // quality button
+  self.qualityButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  [self.qualityButton setImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-quality"] forState:UIControlStateNormal];
+  self.qualityButton.frame = CGRectMake(screenWidth - 66, 20, 44, 44);
+  [self.qualityButton addTarget:self action:@selector(onClickQuality:) forControlEvents:UIControlEventTouchUpInside];
+  [self.topControlView addSubview:self.qualityButton];
 
   // bottom control view
   self.bottomControlView = [[UIView alloc] initWithFrame:CGRectMake(0, screenHeight - 44, screenWidth, 44)];
@@ -243,29 +281,39 @@ LSVideoStreamingQuality currentStreamingQuality = LS_VIDEO_QUALITY_SUPER;
   self.playButton.frame = CGRectMake(screenWidth/2 - 60/2, screenHeight - 64, 60, 60);
   [self.playButton addTarget:self action:@selector(onClickPlay:) forControlEvents:UIControlEventTouchUpInside];
 
-  // flash button
-  self.flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  [self.flashButton setImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-bolt"] forState:UIControlStateNormal];
-  self.flashButton.frame = CGRectMake(screenWidth - 198, 0, 44, 44);
-  [self.flashButton addTarget:self action:@selector(onClickCameraFlash:) forControlEvents:UIControlEventTouchUpInside];
-  [self.bottomControlView addSubview:self.flashButton];
+  // mic button
+  self.micButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  [self.micButton setImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-mic"] forState:UIControlStateNormal];
+  self.micButton.frame = CGRectMake(12.5, 0, 44, 44);
+  [self.micButton addTarget:self action:@selector(onClickMic:) forControlEvents:UIControlEventTouchUpInside];
+  [self.bottomControlView addSubview:self.micButton];
 
-  // camera button
-  self.cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  [self.cameraButton setImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-reverse-camera"] forState:UIControlStateNormal];
-  self.cameraButton.frame = CGRectMake(screenWidth - 132, 0, 44, 44);
-  [self.cameraButton addTarget:self action:@selector(onClickSwitchCamera:) forControlEvents:UIControlEventTouchUpInside];
-  [self.bottomControlView addSubview:self.cameraButton];
+  // channel button
+  self.channelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  [self.channelButton setImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-chat"] forState:UIControlStateNormal];
+  self.channelButton.frame = CGRectMake(screenWidth - 132, 0, 44, 44);
+  [self.channelButton addTarget:self action:@selector(onClickChannel:) forControlEvents:UIControlEventTouchUpInside];
+  [self.bottomControlView addSubview:self.channelButton];
 
-  // quality button
-  self.qualityButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  [self.qualityButton setImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/navicon"] forState:UIControlStateNormal];
-  self.qualityButton.frame = CGRectMake(screenWidth - 66, 0, 44, 44);
-  [self.qualityButton addTarget:self action:@selector(onClickQuality:) forControlEvents:UIControlEventTouchUpInside];
-  [self.bottomControlView addSubview:self.qualityButton];
+  // snapshot button
+  self.snapshotButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  [self.snapshotButton setImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-camera"] forState:UIControlStateNormal];
+  self.snapshotButton.frame = CGRectMake(screenWidth - 66, 0, 44, 44);
+  [self.snapshotButton addTarget:self action:@selector(onClickSnapsot:) forControlEvents:UIControlEventTouchUpInside];
+  [self.bottomControlView addSubview:self.snapshotButton];
+
+  // channel text view
+  self.channelTextView = [[UITextView alloc] initWithFrame:CGRectMake(screenWidth - 140 - 7.5, 64 + 7.5, 140, screenHeight - 64 - 44 - 15)];
+  self.channelTextView.returnKeyType = UIReturnKeyDone;
+  self.channelTextView.backgroundColor = [UIColor clearColor];
+  self.channelTextView.font = [UIFont systemFontOfSize:15];
+  self.channelTextView.textColor = [UIColor whiteColor];
+  self.channelTextView.textContainer.lineBreakMode = NSLineBreakByWordWrapping;
+  self.channelTextView.selectable = NO;
 
   [self.controlOverlay addSubview:self.topControlView];
   [self.controlOverlay addSubview:self.bottomControlView];
+  [self.controlOverlay addSubview:self.channelTextView];
   [self.controlOverlay addSubview:self.playButton];
   [self.streamingOverlay addSubview:self.controlOverlay];
 
@@ -364,6 +412,9 @@ LSVideoStreamingQuality currentStreamingQuality = LS_VIDEO_QUALITY_SUPER;
     onAir = YES;
     [self.playButton setImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-pause"] forState:UIControlStateNormal];
     [self.view makeToast:@"直播已开始" duration:1.0 position:CSToastPositionCenter];
+    if (!micOn) {
+      [self.mediaCapture pauseAudioLiveStream];
+    }
   });
 }
 
@@ -495,6 +546,66 @@ LSVideoStreamingQuality currentStreamingQuality = LS_VIDEO_QUALITY_SUPER;
   NSLog(@"onClickCameraFlash called.");
   flashOn = !flashOn;
   self.mediaCapture.flash = flashOn;
+}
+
+- (void)onClickMic:(id)sender
+{
+  NSLog(@"onClickMic called.");
+  micOn = !micOn;
+  if (micOn) {
+    [self.micButton setImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-mic"] forState:UIControlStateNormal];
+    [self.mediaCapture resumeAudioLiveStream];
+  }
+  else {
+    [self.micButton setImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-mic-off"] forState:UIControlStateNormal];
+    [self.mediaCapture pauseAudioLiveStream];
+  }
+}
+
+- (void)onClickChannel:(id)sender
+{
+  NSLog(@"onClickChannel called.");
+  channelOn = !channelOn;
+  self.channelTextView.hidden = !channelOn;
+}
+
+- (void)onClickSnapsot:(id)sender
+{
+  NSLog(@"onClickSnapshot called.");
+  if (!onAir) {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"直播未开始前无法截图" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){}];
+    [alertController addAction:okAction];
+    [self presentViewController:alertController animated:YES completion:nil];
+  }
+  else {
+    [self.mediaCapture snapShotWithCompletionBlock:^(UIImage *snapImage) {
+      UIImageWriteToSavedPhotosAlbum(snapImage, nil, nil, nil);
+      PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+      BOOL authorized = NO;
+      switch (status) {
+        case PHAuthorizationStatusDenied:
+        case PHAuthorizationStatusRestricted:
+        case PHAuthorizationStatusNotDetermined:
+          authorized = NO;
+          break;
+        case PHAuthorizationStatusAuthorized:
+          authorized = YES;
+          break;
+      }
+
+      UIAlertController *alertController = NULL;
+      if (authorized) {
+        alertController = [UIAlertController alertControllerWithTitle:@"截图已保存到相册" message:nil preferredStyle:UIAlertControllerStyleAlert];
+      }
+      else {
+        alertController = [UIAlertController alertControllerWithTitle:@"无法访问相册" message:@"请在设置中允许悠课访问你的相册" preferredStyle:UIAlertControllerStyleAlert];
+      }
+      UIAlertAction *action = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){}];
+      [alertController addAction:action];
+      [self presentViewController:alertController animated:YES completion:nil];
+    }];
+  }
 }
 
 - (BOOL)requestMediaCapturerAccessWithCompletionHandler:(void (^)(BOOL, NSError*))handler {

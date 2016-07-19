@@ -35,9 +35,25 @@
     <!-- Live Streaming -->
     <header-file src="src/ios/libs/LSMediaCapture.h" />
     <header-file src="src/ios/libs/nMediaLiveStreamingDefs.h" />
-    <source-file src="src/ios/libs/libLSMediaCapture.a" framework="true" />
+<!--     <source-file src="src/ios/libs/libLSMediaCapture.a" framework="true" />
     <source-file src="src/ios/libs/libavdevice.a" framework="true" />
     <source-file src="src/ios/libs/libavfilter.a" framework="true" />
+    <source-file src="src/ios/libs/libyuv.a" framework="true" /> -->
+    <source-file src="src/ios/libs/libLSMediaCapture.a" framework="true" />
+    <source-file src="src/ios/libs/libavcodec.a" framework="true" />
+    <source-file src="src/ios/libs/libavdevice.a" framework="true" />
+    <source-file src="src/ios/libs/libavfilter.a" framework="true" />
+    <source-file src="src/ios/libs/libavformat.a" framework="true" />
+    <source-file src="src/ios/libs/libavresample.a" framework="true" />
+    <source-file src="src/ios/libs/libavutil.a" framework="true" />
+    <source-file src="src/ios/libs/libcrypto.a" framework="true" />
+    <source-file src="src/ios/libs/libfdk-aac.a" framework="true" />
+    <source-file src="src/ios/libs/libopenh264.a" framework="true" />
+    <source-file src="src/ios/libs/librtmp.a" framework="true" />
+    <source-file src="src/ios/libs/libspeex.a" framework="true" />
+    <source-file src="src/ios/libs/libssl.a" framework="true" />
+    <source-file src="src/ios/libs/libswresample.a" framework="true" />
+    <source-file src="src/ios/libs/libswscale.a" framework="true" />
     <source-file src="src/ios/libs/libyuv.a" framework="true" />
 
     <resource-file src="src/ios/res/CDVLiveStreaming.bundle" />
