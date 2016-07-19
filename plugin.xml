@@ -104,7 +104,7 @@
     </config-file>
 
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
-      <activity android:name="xwang.cordova.vcloud.livestreaming.LiveStreamingActivity" android:label="@string/app_name" android:screenOrientation="landscape" android:configChanges="orientation|keyboardHidden|screenSize" />
+      <activity android:name="xwang.cordova.vcloud.livestreaming.LiveStreamingActivity" android:label="@string/app_name" android:screenOrientation="landscape" android:configChanges="orientation|keyboardHidden|screenSize" android:windowSoftInputMode="adjustResize" />
       <!-- 声明网络信息查询服务 -->
       <service android:name="com.netease.livestreamingcapture.NetInfoService"/>
       <!-- 声明直播异常报警服务 -->
@@ -124,30 +124,57 @@
     <source-file src="src/android/libs/armeabi-v7a/liblivestreaming.so" target-dir="libs/armeabi-v7a" />
     <source-file src="src/android/libs/x86/liblivestreaming.so" target-dir="libs/x86" />
     <source-file src="src/android/res/layout/activity_livestreaming.xml" target-dir="res/layout" />
+    <!-- <source-file src="src/android/res/drawable/rounded.xml" target-dir="res/drawable" /> -->
+    <!-- <source-file src="src/android/res/drawable/rounded_button.xml" target-dir="res/drawable" /> -->
     <source-file src="src/android/res/drawable-hdpi/bolt.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-hdpi/pause.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-hdpi/play.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-hdpi/reverse_camera.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-hdpi/navicon.png" target-dir="res/drawable-hdpi" />
+    <source-file src="src/android/res/drawable-hdpi/avatar.png" target-dir="res/drawable-hdpi" />
+    <source-file src="src/android/res/drawable-hdpi/list.png" target-dir="res/drawable-hdpi" />
+    <source-file src="src/android/res/drawable-hdpi/mic_off.png" target-dir="res/drawable-hdpi" />
+    <source-file src="src/android/res/drawable-hdpi/mic_on.png" target-dir="res/drawable-hdpi" />
+    <source-file src="src/android/res/drawable-hdpi/snapshot.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-mdpi/bolt.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-mdpi/pause.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-mdpi/play.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-mdpi/reverse_camera.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-mdpi/navicon.png" target-dir="res/drawable-mdpi" />
+    <source-file src="src/android/res/drawable-mdpi/avatar.png" target-dir="res/drawable-mdpi" />
+    <source-file src="src/android/res/drawable-mdpi/list.png" target-dir="res/drawable-mdpi" />
+    <source-file src="src/android/res/drawable-mdpi/mic_off.png" target-dir="res/drawable-mdpi" />
+    <source-file src="src/android/res/drawable-mdpi/mic_on.png" target-dir="res/drawable-mdpi" />
+    <source-file src="src/android/res/drawable-mdpi/snapshot.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-xhdpi/bolt.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xhdpi/pause.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xhdpi/play.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xhdpi/reverse_camera.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xhdpi/navicon.png" target-dir="res/drawable-xhdpi" />
+    <source-file src="src/android/res/drawable-xhdpi/avatar.png" target-dir="res/drawable-xhdpi" />
+    <source-file src="src/android/res/drawable-xhdpi/list.png" target-dir="res/drawable-xhdpi" />
+    <source-file src="src/android/res/drawable-xhdpi/mic_off.png" target-dir="res/drawable-xhdpi" />
+    <source-file src="src/android/res/drawable-xhdpi/mic_on.png" target-dir="res/drawable-xhdpi" />
+    <source-file src="src/android/res/drawable-xhdpi/snapshot.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/bolt.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/pause.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/play.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/reverse_camera.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/navicon.png" target-dir="res/drawable-xxhdpi" />
+    <source-file src="src/android/res/drawable-xxhdpi/avatar.png" target-dir="res/drawable-xxhdpi" />
+    <source-file src="src/android/res/drawable-xxhdpi/list.png" target-dir="res/drawable-xxhdpi" />
+    <source-file src="src/android/res/drawable-xxhdpi/mic_off.png" target-dir="res/drawable-xxhdpi" />
+    <source-file src="src/android/res/drawable-xxhdpi/mic_on.png" target-dir="res/drawable-xxhdpi" />
+    <source-file src="src/android/res/drawable-xxhdpi/snapshot.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/bolt.png" target-dir="res/drawable-xxxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/pause.png" target-dir="res/drawable-xxxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/play.png" target-dir="res/drawable-xxxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/reverse_camera.png" target-dir="res/drawable-xxxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/navicon.png" target-dir="res/drawable-xxxhdpi" />
+    <source-file src="src/android/res/drawable-xxxhdpi/avatar.png" target-dir="res/drawable-xxxhdpi" />
+    <source-file src="src/android/res/drawable-xxxhdpi/list.png" target-dir="res/drawable-xxxhdpi" />
+    <source-file src="src/android/res/drawable-xxxhdpi/mic_off.png" target-dir="res/drawable-xxxhdpi" />
+    <source-file src="src/android/res/drawable-xxxhdpi/mic_on.png" target-dir="res/drawable-xxxhdpi" />
+    <source-file src="src/android/res/drawable-xxxhdpi/snapshot.png" target-dir="res/drawable-xxxhdpi" />
   </platform>
 </plugin>
