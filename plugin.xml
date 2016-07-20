@@ -146,7 +146,7 @@
     <source-file src="src/android/res/drawable-hdpi/reverse_camera.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-hdpi/navicon.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-hdpi/avatar.png" target-dir="res/drawable-hdpi" />
-    <source-file src="src/android/res/drawable-hdpi/list.png" target-dir="res/drawable-hdpi" />
+    <source-file src="src/android/res/drawable-hdpi/list_.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-hdpi/mic_off.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-hdpi/mic_on.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-hdpi/snapshot_.png" target-dir="res/drawable-hdpi" />
@@ -156,7 +156,7 @@
     <source-file src="src/android/res/drawable-mdpi/reverse_camera.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-mdpi/navicon.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-mdpi/avatar.png" target-dir="res/drawable-mdpi" />
-    <source-file src="src/android/res/drawable-mdpi/list.png" target-dir="res/drawable-mdpi" />
+    <source-file src="src/android/res/drawable-mdpi/list_.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-mdpi/mic_off.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-mdpi/mic_on.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-mdpi/snapshot_.png" target-dir="res/drawable-mdpi" />
@@ -166,7 +166,7 @@
     <source-file src="src/android/res/drawable-xhdpi/reverse_camera.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xhdpi/navicon.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xhdpi/avatar.png" target-dir="res/drawable-xhdpi" />
-    <source-file src="src/android/res/drawable-xhdpi/list.png" target-dir="res/drawable-xhdpi" />
+    <source-file src="src/android/res/drawable-xhdpi/list_.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xhdpi/mic_off.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xhdpi/mic_on.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xhdpi/snapshot_.png" target-dir="res/drawable-xhdpi" />
@@ -176,7 +176,7 @@
     <source-file src="src/android/res/drawable-xxhdpi/reverse_camera.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/navicon.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/avatar.png" target-dir="res/drawable-xxhdpi" />
-    <source-file src="src/android/res/drawable-xxhdpi/list.png" target-dir="res/drawable-xxhdpi" />
+    <source-file src="src/android/res/drawable-xxhdpi/list_.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/mic_off.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/mic_on.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/snapshot_.png" target-dir="res/drawable-xxhdpi" />
@@ -186,7 +186,7 @@
     <source-file src="src/android/res/drawable-xxxhdpi/reverse_camera.png" target-dir="res/drawable-xxxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/navicon.png" target-dir="res/drawable-xxxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/avatar.png" target-dir="res/drawable-xxxhdpi" />
-    <source-file src="src/android/res/drawable-xxxhdpi/list.png" target-dir="res/drawable-xxxhdpi" />
+    <source-file src="src/android/res/drawable-xxxhdpi/list_.png" target-dir="res/drawable-xxxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/mic_off.png" target-dir="res/drawable-xxxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/mic_on.png" target-dir="res/drawable-xxxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/snapshot_.png" target-dir="res/drawable-xxxhdpi" />

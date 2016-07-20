@@ -128,7 +128,7 @@
             android:layout_toStartOf="@+id/snapshotBtn"
             android:layout_marginRight="12.5dp"
             android:background="@null"
-            android:src="@drawable/list"/>
+            android:src="@drawable/list_"/>
 
     </RelativeLayout>
 
