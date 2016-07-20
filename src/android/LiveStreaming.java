@@ -16,6 +16,9 @@ public class LiveStreaming extends CordovaPlugin {
     if (action.equals("play")) {
       return play(args, callbackContext);
     }
+    else if (action.equals("channel")) {
+      return channel(args, callbackContext);
+    }
     return false;
   }
 
@@ -34,13 +37,28 @@ public class LiveStreaming extends CordovaPlugin {
       .putExtra("title", title);
     this.cordova.getActivity().startActivity(intent);
 
+    PluginResult result = new PluginResult(PluginResult.Status.OK);
+    callbackContext.sendPluginResult(result);
+    return true;
+  }
+
+  protected boolean channel(CordovaArgs args, final CallbackContext callbackContext) {
+    final String name, content;
+    try {
+      name = args.getString(0);
+      content = args.getString(1);
+    } catch (JSONException e) {
+      callbackContext.error(ERROR_INVALID_PARAMETERS);
+      return true;
+    }
+
+    LiveStreamingActivity.addChannelMessage(name, content);
     sendNoResultPluginResult(callbackContext);
     return true;
   }
 
   private void sendNoResultPluginResult(CallbackContext callbackContext) {
     PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
-    result.setKeepCallback(true);
     callbackContext.sendPluginResult(result);
   }
 }

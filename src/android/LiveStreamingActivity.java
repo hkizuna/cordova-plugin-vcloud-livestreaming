@@ -4,15 +4,25 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.media.AudioFormat;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Looper;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.method.ScrollingMovementMethod;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -23,6 +33,9 @@ import com.xinfu.uuke.local.R;
 import com.netease.LSMediaCapture.*;
 import com.netease.LSMediaCapture.lsMediaCapture.*;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -48,17 +61,25 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
   private FrameLayout mControlOverlay;
   private RelativeLayout mTopView;
   private RelativeLayout mBottomView;
-  private ImageButton mBackBtn;
+  private Button mBackBtn;
   private TextView mTitleLabel;
   private ImageButton mPlayBtn;
   private ImageButton mFlashBtn;
   private ImageButton mCameraBtn;
   private ImageButton mQualityBtn;
 
+  private ImageButton mMicBtn;
+  private ImageButton mChannelBtn;
+  private ImageButton mSnapshotBtn;
+  private static TextView mChannelText;
+  private boolean isChannelHide = false;
+  public static Handler UIHandler = new Handler(Looper.getMainLooper());
+
   private boolean isHide = false;
   private boolean onFlash = false;
   private boolean onAir = false;
   private boolean onPreview = false;
+  private boolean micOn = true;
 
   private lsMediaCapture mLSMediaCapture = null;
   private LSLiveStreamingParaCtx mLSLiveStreamingParaCtx = null;
@@ -100,7 +121,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
 
     mTopView = (RelativeLayout) findViewById(R.id.topView);
 
-    mBackBtn = (ImageButton) findViewById(R.id.backBtn);
+    mBackBtn = (Button) findViewById(R.id.backBtn);
     mBackBtn.setOnClickListener(mOnClickEvent);
 
     mTitleLabel = (TextView) findViewById(R.id.titleLabel);
@@ -119,6 +140,35 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
 
     mQualityBtn = (ImageButton) findViewById(R.id.qualityBtn);
     mQualityBtn.setOnClickListener(mOnClickEvent);
+
+    mMicBtn = (ImageButton) findViewById(R.id.micBtn);
+    mMicBtn.setOnClickListener(mOnClickEvent);
+
+    mChannelBtn = (ImageButton) findViewById(R.id.channelBtn);
+    mChannelBtn.setOnClickListener(mOnClickEvent);
+
+    mSnapshotBtn = (ImageButton) findViewById(R.id.snapshotBtn);
+    mSnapshotBtn.setOnClickListener(mOnClickEvent);
+
+    mChannelText = (TextView) findViewById(R.id.channelText);
+    mChannelText.setMovementMethod(new ScrollingMovementMethod());
+  }
+
+  public static void addChannelMessage(final String name, final String message) {
+    UIHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        Spannable spannable = new SpannableString(name + ": " + message + "\n");
+        spannable.setSpan(new ForegroundColorSpan(Color.rgb(28,236,253)), 0, name.length(),  Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        mChannelText.append(spannable);
+
+        final int scrollAmount = mChannelText.getLayout().getLineTop(mChannelText.getLineCount()) - mChannelText.getHeight();
+        if (scrollAmount > 0)
+          mChannelText.scrollTo(0, scrollAmount);
+        else
+          mChannelText.scrollTo(0, 0);
+      }
+    });
   }
 
   private void initMediaCapture() {
@@ -240,6 +290,45 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
             .show();
         }
       }
+      else if (view.getId() == R.id.micBtn) {
+        if (onAir) {
+          micOn = !micOn;
+          if (micOn) {
+            mMicBtn.setImageResource(R.drawable.mic_on);
+            mLSMediaCapture.resumeAudioLiveStream();
+          }
+          else {
+            mMicBtn.setImageResource(R.drawable.mic_off);
+            mLSMediaCapture.pauseAudioLiveStream();
+          }
+        }
+        else {
+          new AlertDialog.Builder(mContext)
+            .setTitle("推流开始后才可关闭声音")
+            .setPositiveButton("确定", null)
+            .show();
+        }
+      }
+      else if (view.getId() == R.id.channelBtn) {
+        isChannelHide = !isChannelHide;
+        if (isChannelHide) {
+          mChannelText.setVisibility(View.INVISIBLE);
+        }
+        else {
+          mChannelText.setVisibility(View.VISIBLE);
+        }
+      }
+      else if (view.getId() == R.id.snapshotBtn) {
+        if (onAir) {
+          mLSMediaCapture.enableScreenShot();
+        }
+        else {
+          new AlertDialog.Builder(mContext)
+            .setTitle("推流开始后才可截图")
+            .setPositiveButton("确定", null)
+            .show();
+        }
+      }
       else if (view.getId() == R.id.controlOverlay) {
         hide();
       }
@@ -255,6 +344,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
     mPlayBtn.setVisibility(View.VISIBLE);
     mTopView.setVisibility(View.VISIBLE);
     mBottomView.setVisibility(View.VISIBLE);
+    mChannelText.setVisibility(View.VISIBLE);
   }
 
   public void hide() {
@@ -263,6 +353,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
     mPlayBtn.setVisibility(View.INVISIBLE);
     mTopView.setVisibility(View.INVISIBLE);
     mBottomView.setVisibility(View.INVISIBLE);
+    mChannelText.setVisibility(View.INVISIBLE);
   }
 
   @Override
@@ -406,7 +497,68 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
       case lsMessageHandler.MSG_START_PREVIEW_FINISHED:
         onPreview = true;
         break;
+      case lsMessageHandler.MSG_SCREENSHOT_FINISHED:
+        getScreenShotByteBuffer((byte[]) o);
+        break;
     }
+  }
+  private File savePhoto(byte[] screenShotByteBuffer) {
+    File retVal = null;
+
+    try {
+      Calendar c = Calendar.getInstance();
+      String date = "" + c.get(Calendar.DAY_OF_MONTH)
+        + c.get(Calendar.MONTH)
+        + c.get(Calendar.YEAR)
+        + c.get(Calendar.HOUR_OF_DAY)
+        + c.get(Calendar.MINUTE)
+        + c.get(Calendar.SECOND);
+
+      String deviceVersion = Build.VERSION.RELEASE;
+      int check = deviceVersion.compareTo("2.3.3");
+
+      File folder;
+      if (check >= 1) {
+        folder = Environment
+          .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+
+        if(!folder.exists()) {
+          folder.mkdirs();
+        }
+      } else {
+        folder = Environment.getExternalStorageDirectory();
+      }
+
+      File imageFile = new File(folder, "snapshot_" + date.toString() + ".jpg");
+
+      FileOutputStream out = new FileOutputStream(imageFile);
+      out.write(screenShotByteBuffer);
+      out.flush();
+      out.close();
+
+      retVal = imageFile;
+    } catch (Exception e) {
+    }
+    return retVal;
+  }
+
+  public void getScreenShotByteBuffer(byte[] screenShotByteBuffer) {
+    File imageFile = savePhoto(screenShotByteBuffer);
+    if (imageFile != null) {
+      scanPhoto(imageFile);
+      Toast.makeText(mContext, "截图成功", Toast.LENGTH_SHORT).show();
+    }
+    else {
+      Toast.makeText(mContext, "截图失败", Toast.LENGTH_SHORT).show();
+    }
+  }
+
+  private void scanPhoto(File imageFile)
+  {
+    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+    Uri contentUri = Uri.fromFile(imageFile);
+    mediaScanIntent.setData(contentUri);
+    mContext.sendBroadcast(mediaScanIntent);
   }
 
 }

@@ -42,16 +42,38 @@
             android:gravity="center_vertical"
             android:textSize="16sp" />
 
-        <ImageButton
+        <Button
             android:layout_width="44dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:text="完成"
             android:id="@+id/backBtn"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="false"
+            android:layout_marginLeft="12.5dp"
             android:background="@null"
-            android:src="@drawable/abc_ic_ab_back_mtrl_am_alpha"/>
+            android:textColor="#ffffff"/>
+
+        <ImageButton
+            android:layout_width="44dp"
+            android:layout_height="match_parent"
+            android:id="@+id/cameraBtn"
+            android:layout_centerVertical="true"
+            android:background="@null"
+            android:src="@drawable/reverse_camera"
+            android:layout_marginRight="12.5dp"
+            android:layout_alignParentRight="true"/>
+
+        <ImageButton
+            android:layout_width="44dp"
+            android:layout_height="match_parent"
+            android:id="@+id/flashBtn"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/cameraBtn"
+            android:layout_toStartOf="@+id/cameraBtn"
+            android:layout_marginRight="12.5dp"
+            android:background="@null"
+            android:src="@drawable/bolt"/>
 
     </RelativeLayout>
 
@@ -77,24 +99,37 @@
 
         <ImageButton
             android:layout_width="44dp"
-            android:layout_height="match_parent"
-            android:id="@+id/cameraBtn"
+            android:layout_height="wrap_content"
+            android:id="@+id/micBtn"
             android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="12.5dp"
             android:background="@null"
-            android:src="@drawable/reverse_camera"
-            android:layout_marginRight="12.5dp"
-            android:layout_alignParentRight="true"/>
+            android:src="@drawable/mic_on"/>
 
         <ImageButton
             android:layout_width="44dp"
-            android:layout_height="match_parent"
-            android:id="@+id/flashBtn"
+            android:layout_height="wrap_content"
+            android:id="@+id/snapshotBtn"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/cameraBtn"
-            android:layout_toStartOf="@+id/cameraBtn"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_marginRight="12.5dp"
             android:background="@null"
-            android:src="@drawable/bolt"/>
+            android:src="@drawable/snapshot_"/>
+
+        <ImageButton
+            android:layout_width="44dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/channelBtn"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/snapshotBtn"
+            android:layout_toStartOf="@+id/snapshotBtn"
+            android:layout_marginRight="12.5dp"
+            android:background="@null"
+            android:src="@drawable/list"/>
+
     </RelativeLayout>
 
     <ImageButton
@@ -105,5 +140,13 @@
         android:background="@null"
         android:src="@drawable/play"
         android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:layout_width="140dp"
+        android:layout_height="240dp"
+        android:id="@+id/channelText"
+        android:layout_gravity="right|center_vertical"
+        android:textSize="15dp"
+        android:textColor="#ffffff"/>
 
 </FrameLayout>
