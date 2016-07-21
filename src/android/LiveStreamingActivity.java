@@ -29,7 +29,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.xinfu.uuke.local.R;
+import __PACKAGE_NAME__.R;
 import com.netease.LSMediaCapture.*;
 import com.netease.LSMediaCapture.lsMediaCapture.*;
 
