@@ -76,21 +76,22 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
   public static Handler UIHandler = new Handler(Looper.getMainLooper());
 
   private boolean isHide = false;
-  private boolean onFlash = false;
-  private boolean onAir = false;
-  private boolean onPreview = false;
+  private boolean flashOn = false;
   private boolean micOn = true;
 
   private lsMediaCapture mLSMediaCapture = null;
   private LSLiveStreamingParaCtx mLSLiveStreamingParaCtx = null;
 
+  private boolean mStreamingOn;
+  private boolean mStreamingStarted;
+  private boolean mPreviewOn;
+  private int mPreviewWidth;
+  private int mPreviewHeight;
+  private int mPreviewBitrate;
+
   private Thread mCameraThread;
   private Looper mCameraLooper;
   private Camera mCamera;
-
-  private int videoWidth = 1280;
-  private int videoHeight = 720;
-  private int videoBitrate = 600000;
 
   private int mCameraPosition = CAMERA_POSITION_BACK;
   private int mQuality = STREAMING_QUALITY_SUPER;
@@ -154,29 +155,56 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
     mChannelText.setMovementMethod(new ScrollingMovementMethod());
   }
 
-  public static void addChannelMessage(final String name, final String message) {
-    UIHandler.post(new Runnable() {
-      @Override
-      public void run() {
-        Spannable spannable = new SpannableString(name + ": " + message + "\n");
-        spannable.setSpan(new ForegroundColorSpan(Color.rgb(28,236,253)), 0, name.length(),  Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        mChannelText.append(spannable);
+  private void initMediaCapture() {
+    initCameraSupportResolution(mQuality, mCameraPosition);
+    mLSMediaCapture = new lsMediaCapture(this, mContext, mPreviewWidth, mPreviewHeight);
+    mStreamingOn = false;
+    mPreviewOn = false;
+    mStreamingStarted = false;
+    initLog();
+    initParaCtx(mPreviewWidth, mPreviewHeight, mPreviewBitrate);
 
-        final int scrollAmount = mChannelText.getLayout().getLineTop(mChannelText.getLineCount()) - mChannelText.getHeight();
-        if (scrollAmount > 0)
-          mChannelText.scrollTo(0, scrollAmount);
-        else
-          mChannelText.scrollTo(0, 0);
+    if (mLSMediaCapture != null) {
+      mLSMediaCapture.startVideoPreview(mStreamingView, mLSLiveStreamingParaCtx.sLSVideoParaCtx.cameraPosition.cameraPosition);
+      boolean ret = mLSMediaCapture.initLiveStream(mUrl, mLSLiveStreamingParaCtx);
+      if (ret) {
+        Log.d("LSMediaCapture", "initLiveStream succeed.");
       }
-    });
+      else {
+        Log.d("LSMediaCapture", "initLiveStream failed.");
+      }
+    }
   }
 
-  private void initMediaCapture() {
-    setCameraSupportResolution(mQuality, mCameraPosition);
-    mLSMediaCapture = new lsMediaCapture(this, mContext, videoWidth, videoHeight);
-    getLogPath();
-    mLSMediaCapture.setTraceLevel(0, mLogPath);
+  private void initCameraSupportResolution(int quality, int cameraPosition) {
+    List<Camera.Size> sizes = getCameraSupportSize(cameraPosition);
+    switch (quality) {
+      case STREAMING_QUALITY_MEDIUM:
+        mPreviewWidth = 320;
+        mPreviewHeight = 240;
+        mPreviewBitrate = 250000;
+        break;
+      case STREAMING_QUALITY_HIGH:
+        mPreviewWidth = 640;
+        mPreviewHeight = 480;
+        mPreviewBitrate = 600000;
+        break;
+      case STREAMING_QUALITY_SUPER:
+        mPreviewWidth = 1280;
+        mPreviewHeight = 720;
+        mPreviewBitrate = 1500000;
+        break;
+    }
+  }
 
+  private void initLog() {
+    if (mLSMediaCapture != null) {
+      getLogPath();
+      mLSMediaCapture.setTraceLevel(0, mLogPath);
+    }
+  }
+
+  private void initParaCtx(int width, int height, int bitrate) {
     mLSLiveStreamingParaCtx = mLSMediaCapture.new LSLiveStreamingParaCtx();
     mLSLiveStreamingParaCtx.eHaraWareEncType = mLSLiveStreamingParaCtx.new HardWareEncEnable();
     mLSLiveStreamingParaCtx.eOutFormatType = mLSLiveStreamingParaCtx.new OutputFormatType();
@@ -202,19 +230,27 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
     mLSLiveStreamingParaCtx.sLSVideoParaCtx.cameraPosition.cameraPosition = CAMERA_POSITION_BACK;
     mLSLiveStreamingParaCtx.sLSVideoParaCtx.interfaceOrientation.interfaceOrientation = CAMERA_ORIENTATION_LANDSCAPE;
     mLSLiveStreamingParaCtx.sLSVideoParaCtx.fps = 20;
-    mLSLiveStreamingParaCtx.sLSVideoParaCtx.bitrate = videoBitrate;
+    mLSLiveStreamingParaCtx.sLSVideoParaCtx.bitrate = bitrate;
     mLSLiveStreamingParaCtx.sLSVideoParaCtx.codec.videoCODECType = LS_VIDEO_CODEC_AVC;
-    mLSLiveStreamingParaCtx.sLSVideoParaCtx.width = videoWidth;
-    mLSLiveStreamingParaCtx.sLSVideoParaCtx.height = videoHeight;
+    mLSLiveStreamingParaCtx.sLSVideoParaCtx.width = width;
+    mLSLiveStreamingParaCtx.sLSVideoParaCtx.height = height;
+  }
 
-    mLSMediaCapture.startVideoPreview(mStreamingView, mLSLiveStreamingParaCtx.sLSVideoParaCtx.cameraPosition.cameraPosition);
-    boolean ret = mLSMediaCapture.initLiveStream(mUrl, mLSLiveStreamingParaCtx);
-    if (ret) {
-      Log.d("Init", "init succeed");
-    }
-    else {
-      Log.d("Init", "init failed");
-    }
+  public static void addChannelMessage(final String name, final String message) {
+    UIHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        Spannable spannable = new SpannableString(name + ": " + message + "\n");
+        spannable.setSpan(new ForegroundColorSpan(Color.rgb(28,236,253)), 0, name.length(),  Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        mChannelText.append(spannable);
+
+        final int scrollAmount = mChannelText.getLayout().getLineTop(mChannelText.getLineCount()) - mChannelText.getHeight();
+        if (scrollAmount > 0)
+          mChannelText.scrollTo(0, scrollAmount);
+        else
+          mChannelText.scrollTo(0, 0);
+      }
+    });
   }
 
   View.OnClickListener mOnClickEvent = new View.OnClickListener() {
@@ -226,7 +262,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
       }
       else if (view.getId() == R.id.playBtn) {
         if (mLSMediaCapture != null) {
-          if (onAir) {
+          if (mStreamingOn) {
             new AlertDialog.Builder(mContext)
               .setTitle("是否结束此次直播")
               .setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -239,14 +275,19 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
               .show();
           }
           else {
-            mLSMediaCapture.startLiveStreaming();
+            if (mStreamingStarted) {
+              mLSMediaCapture.restartLiveStream();
+            }
+            else {
+              mLSMediaCapture.startLiveStreaming();
+            }
           }
         }
       }
       else if (view.getId() == R.id.flashBtn) {
         if (mLSMediaCapture != null) {
-          onFlash = !onFlash;
-          mLSMediaCapture.setCameraFlashPara(onFlash);
+          flashOn = !flashOn;
+          mLSMediaCapture.setCameraFlashPara(flashOn);
         }
       }
       else if (view.getId() == R.id.cameraBtn) {
@@ -261,7 +302,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
         }
       }
       else if (view.getId() == R.id.qualityBtn) {
-        if (onAir) {
+        if (mStreamingOn) {
           new AlertDialog.Builder(mContext)
             .setTitle("推流中不可切换推流品质")
             .setPositiveButton("确定", null)
@@ -275,8 +316,8 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
               @Override
               public void onClick(DialogInterface dialog, int which) {
                 if (mQuality != mSelectedQuality) {
-                  clear();
-                  initMediaCapture();
+                  //clear();
+                  //initMediaCapture();
                 }
               }
             })
@@ -291,7 +332,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
         }
       }
       else if (view.getId() == R.id.micBtn) {
-        if (onAir) {
+        if (mStreamingOn) {
           micOn = !micOn;
           if (micOn) {
             mMicBtn.setImageResource(R.drawable.mic_on);
@@ -319,7 +360,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
         }
       }
       else if (view.getId() == R.id.snapshotBtn) {
-        if (onAir) {
+        if (mStreamingOn) {
           mLSMediaCapture.enableScreenShot();
         }
         else {
@@ -388,14 +429,24 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
   }
 
   private void clear() {
-    if(mLSMediaCapture != null) {
-      if (onAir) {
-        mLSMediaCapture.stopLiveStreaming();
+    if (mLSMediaCapture != null && mStreamingOn) {
+      if (mPreviewOn) {
+        mLSMediaCapture.stopVideoPreview();
+        mLSMediaCapture.destroyVideoPreview();
       }
+      mLSMediaCapture.stopLiveStreaming();
+      mLSMediaCapture.uninitLsMediaCapture(false);
+      mLSMediaCapture = null;
+    }
+    else if (mLSMediaCapture != null && mPreviewOn) {
       mLSMediaCapture.stopVideoPreview();
       mLSMediaCapture.destroyVideoPreview();
+      mLSMediaCapture.uninitLsMediaCapture(true);
       mLSMediaCapture = null;
-      mLSLiveStreamingParaCtx = null;
+    }
+    else if (mLSMediaCapture != null) {
+      mLSMediaCapture.uninitLsMediaCapture(true);
+      mLSMediaCapture = null;
     }
   }
 
@@ -459,49 +510,6 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
     return null;
   }
 
-  private void setCameraSupportResolution(int quality, int cameraPosition) {
-    List<Camera.Size> sizes = getCameraSupportSize(cameraPosition);
-    switch (quality) {
-      case STREAMING_QUALITY_MEDIUM:
-        videoWidth = 320;
-        videoHeight = 240;
-        videoBitrate = 250000;
-        break;
-      case STREAMING_QUALITY_HIGH:
-        videoWidth = 640;
-        videoHeight = 480;
-        videoBitrate = 600000;
-        break;
-      case STREAMING_QUALITY_SUPER:
-        videoWidth = 1280;
-        videoHeight = 720;
-        videoBitrate = 1500000;
-        break;
-    }
-  }
-
-  @Override
-  public void handleMessage(int message, Object o) {
-    Log.d("handleMessage", "message: "+ message);
-    switch (message) {
-      case lsMessageHandler.MSG_START_LIVESTREAMING_FINISHED:
-        onAir = true;
-        mPlayBtn.setImageResource(R.drawable.pause);
-        Toast.makeText(mContext, "直播已开始", Toast.LENGTH_SHORT).show();
-        break;
-      case lsMessageHandler.MSG_STOP_LIVESTREAMING_FINISHED:
-        onAir = false;
-        mPlayBtn.setImageResource(R.drawable.play);
-        Toast.makeText(mContext, "直播已结束", Toast.LENGTH_SHORT).show();
-        break;
-      case lsMessageHandler.MSG_START_PREVIEW_FINISHED:
-        onPreview = true;
-        break;
-      case lsMessageHandler.MSG_SCREENSHOT_FINISHED:
-        getScreenShotByteBuffer((byte[]) o);
-        break;
-    }
-  }
   private File savePhoto(byte[] screenShotByteBuffer) {
     File retVal = null;
 
@@ -561,4 +569,31 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
     mContext.sendBroadcast(mediaScanIntent);
   }
 
+  @Override
+  public void handleMessage(int message, Object o) {
+    Log.d("lsMessageHandler", "" + message);
+    switch (message) {
+      case lsMessageHandler.MSG_START_LIVESTREAMING_FINISHED:
+        if (!mStreamingOn) {
+          mStreamingOn = true;
+          mStreamingStarted = true;
+          mPlayBtn.setImageResource(R.drawable.pause);
+          Toast.makeText(mContext, "直播已开始", Toast.LENGTH_SHORT).show();
+        }
+        break;
+      case lsMessageHandler.MSG_STOP_LIVESTREAMING_FINISHED:
+        if (mStreamingOn) {
+          mStreamingOn = false;
+          mPlayBtn.setImageResource(R.drawable.play);
+          Toast.makeText(mContext, "直播已结束", Toast.LENGTH_SHORT).show();
+        }
+        break;
+      case lsMessageHandler.MSG_START_PREVIEW_FINISHED:
+        mPreviewOn = true;
+        break;
+      case lsMessageHandler.MSG_SCREENSHOT_FINISHED:
+        getScreenShotByteBuffer((byte[]) o);
+        break;
+    }
+  }
 }
