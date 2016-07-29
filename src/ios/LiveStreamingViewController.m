@@ -8,6 +8,7 @@
 #import "LiveStreamingViewController.h"
 #import "UIView+Toast.h"
 #import <Photos/Photos.h>
+#import <AVFoundation/AVFoundation.h>
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
@@ -169,6 +170,7 @@ LSVideoStreamingQuality presentQuality = LS_VIDEO_QUALITY_SUPER;
 @property (nonatomic, strong) UIButton *snapshotButton;
 @property (nonatomic, strong) UITextView *channelTextView;
 @property (nonatomic, strong) LSMediaCapture *mediaCapture;
+@property (nonatomic, strong) UIProgressView *blowLevelProgress;
 
 @end
 
@@ -185,6 +187,12 @@ BOOL videoOn = YES;
 BOOL micOn = YES;
 BOOL channelOn = YES;
 
+AVAudioRecorder *recorder;
+NSTimer *volumeLevelTimer;
+const float ALPHA = 0.05f;
+float lowPassResults = 0.0f;
+float blowLevel = 0.0f;
+
 LSVideoStreamingQuality currentStreamingQuality = LS_VIDEO_QUALITY_SUPER;
 
 - (instancetype)initWithURL:(NSString *)url title:(NSString *)title andOptions:(NSDictionary *)options
@@ -195,9 +203,42 @@ LSVideoStreamingQuality currentStreamingQuality = LS_VIDEO_QUALITY_SUPER;
     self.streamingTitle = title;
     self.options = options;
   }
+  [self initBlowDetection];
   return self;
 }
 
+- (void)initBlowDetection
+{
+  NSDictionary *settings = [NSDictionary dictionaryWithObjectsAndKeys:
+                            [NSNumber numberWithFloat:44100.0], AVSampleRateKey,
+                            [NSNumber numberWithInt:kAudioFormatAppleLossless], AVFormatIDKey,
+                            [NSNumber numberWithInt:0], AVNumberOfChannelsKey,
+                            [NSNumber numberWithInt:AVAudioQualityMax], AVEncoderAudioQualityKey, nil];
+
+  AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+  [audioSession setActive:YES error:nil];
+  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryRecord error:nil];
+  recorder = [[AVAudioRecorder alloc] initWithURL:[NSURL fileURLWithPath:@"/dev/null"] settings:settings error:nil];
+  if (recorder) {
+    [recorder prepareToRecord];
+    recorder.meteringEnabled = TRUE;
+    [recorder record];
+    volumeLevelTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(levelTimerCallback:) userInfo:nil repeats:YES];
+  }
+}
+
+- (void)levelTimerCallback:(NSTimer *)timer {
+  [recorder updateMeters];
+  float peakPowerForChannel = pow(10, (0.05 * [recorder peakPowerForChannel:0]));
+  lowPassResults = ALPHA * peakPowerForChannel + (1.0 - ALPHA) * lowPassResults;
+  if (lowPassResults > 0.5) {
+    blowLevel = lowPassResults * 2 - 1.0;
+  }
+  else {
+    blowLevel = 0.0f;
+  }
+  [self.blowLevelProgress setProgress:1 - blowLevel animated:YES];
+}
 - (void)addChannelName:(NSString *)name andMessage:(NSString *)message
 {
   NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithAttributedString:self.channelTextView.attributedText];
@@ -287,6 +328,15 @@ LSVideoStreamingQuality currentStreamingQuality = LS_VIDEO_QUALITY_SUPER;
   self.micButton.frame = CGRectMake(12.5, 0, 44, 44);
   [self.micButton addTarget:self action:@selector(onClickMic:) forControlEvents:UIControlEventTouchUpInside];
   [self.bottomControlView addSubview:self.micButton];
+
+  // blow level progress
+  self.blowLevelProgress = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
+  self.blowLevelProgress.layer.frame = CGRectMake(43, 15.5, 100, 13);
+  [self.blowLevelProgress setProgressTintColor:[UIColor blackColor]];
+  [self.blowLevelProgress setTrackImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-volume-level-progress"]];
+  [self.blowLevelProgress setProgress:1 animated:YES];
+  self.blowLevelProgress.transform = CGAffineTransformMakeScale(-1.0f, 1.0f);
+  [self.bottomControlView addSubview:self.blowLevelProgress];
 
   // channel button
   self.channelButton = [UIButton buttonWithType:UIButtonTypeCustom];
