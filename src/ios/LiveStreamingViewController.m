@@ -231,14 +231,24 @@ LSVideoStreamingQuality currentStreamingQuality = LS_VIDEO_QUALITY_SUPER;
   [recorder updateMeters];
   float peakPowerForChannel = pow(10, (0.05 * [recorder peakPowerForChannel:0]));
   lowPassResults = ALPHA * peakPowerForChannel + (1.0 - ALPHA) * lowPassResults;
-  if (lowPassResults > 0.5) {
+  if (lowPassResults > 0.3) {
     blowLevel = lowPassResults * 2 - 1.0;
   }
   else {
     blowLevel = 0.0f;
   }
+  blowLevel += randomFloat(0.0f, 0.3f);
+//  float peakPowerForChannel = [recorder peakPowerForChannel:0];
+//  peakPowerForChannel += 160.0f;
+//  peakPowerForChannel /= 160.0f;
+//  NSLog(@"%f", peakPowerForChannel);
   [self.blowLevelProgress setProgress:1 - blowLevel animated:YES];
 }
+
+float randomFloat(float Min, float Max){
+  return ((arc4random()%RAND_MAX)/(RAND_MAX*1.0))*(Max-Min)+Min;
+}
+
 - (void)addChannelName:(NSString *)name andMessage:(NSString *)message
 {
   NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithAttributedString:self.channelTextView.attributedText];
@@ -336,7 +346,10 @@ LSVideoStreamingQuality currentStreamingQuality = LS_VIDEO_QUALITY_SUPER;
   [self.blowLevelProgress setTrackImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-volume-level-progress"]];
   [self.blowLevelProgress setProgress:1 animated:YES];
   self.blowLevelProgress.transform = CGAffineTransformMakeScale(-1.0f, 1.0f);
+  UIImageView *trackImageview = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CDVLiveStreaming.bundle/ios-volume-level-track"]];
+  trackImageview.frame = CGRectMake(43, 15.5, 100, 13);
   [self.bottomControlView addSubview:self.blowLevelProgress];
+  [self.bottomControlView addSubview:trackImageview];
 
   // channel button
   self.channelButton = [UIButton buttonWithType:UIButtonTypeCustom];
