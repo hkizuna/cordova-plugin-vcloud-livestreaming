@@ -151,6 +151,8 @@
     <source-file src="src/android/res/drawable-hdpi/mic_off.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-hdpi/mic_on.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-hdpi/snapshot_.png" target-dir="res/drawable-hdpi" />
+    <source-file src="src/android/res/drawable-hdpi/blow_level_progress.png" target-dir="res/drawable-hdpi" />
+    <source-file src="src/android/res/drawable-hdpi/blow_level_track.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-mdpi/bolt.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-mdpi/pause.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-mdpi/play.png" target-dir="res/drawable-mdpi" />
@@ -161,6 +163,9 @@
     <source-file src="src/android/res/drawable-mdpi/mic_off.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-mdpi/mic_on.png" target-dir="res/drawable-mdpi" />
     <source-file src="src/android/res/drawable-mdpi/snapshot_.png" target-dir="res/drawable-mdpi" />
+    <source-file src="src/android/res/drawable-mdpi/blow_level_progress.png" target-dir="res/drawable-mdpi" />
+    <source-file src="src/android/res/drawable-mdpi/blow_level_track.png" target-dir="res/drawable-mdpi" />
+
     <source-file src="src/android/res/drawable-xhdpi/bolt.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xhdpi/pause.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xhdpi/play.png" target-dir="res/drawable-xhdpi" />
@@ -171,6 +176,9 @@
     <source-file src="src/android/res/drawable-xhdpi/mic_off.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xhdpi/mic_on.png" target-dir="res/drawable-xhdpi" />
     <source-file src="src/android/res/drawable-xhdpi/snapshot_.png" target-dir="res/drawable-xhdpi" />
+    <source-file src="src/android/res/drawable-xhdpi/blow_level_progress.png" target-dir="res/drawable-xhdpi" />
+    <source-file src="src/android/res/drawable-xhdpi/blow_level_track.png" target-dir="res/drawable-xhdpi" />
+
     <source-file src="src/android/res/drawable-xxhdpi/bolt.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/pause.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/play.png" target-dir="res/drawable-xxhdpi" />
@@ -181,6 +189,9 @@
     <source-file src="src/android/res/drawable-xxhdpi/mic_off.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/mic_on.png" target-dir="res/drawable-xxhdpi" />
     <source-file src="src/android/res/drawable-xxhdpi/snapshot_.png" target-dir="res/drawable-xxhdpi" />
+    <source-file src="src/android/res/drawable-xxhdpi/blow_level_progress.png" target-dir="res/drawable-xxhdpi" />
+    <source-file src="src/android/res/drawable-xxhdpi/blow_level_track.png" target-dir="res/drawable-xxhdpi" />
+
     <source-file src="src/android/res/drawable-xxxhdpi/bolt.png" target-dir="res/drawable-xxxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/pause.png" target-dir="res/drawable-xxxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/play.png" target-dir="res/drawable-xxxhdpi" />
@@ -191,5 +202,7 @@
     <source-file src="src/android/res/drawable-xxxhdpi/mic_off.png" target-dir="res/drawable-xxxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/mic_on.png" target-dir="res/drawable-xxxhdpi" />
     <source-file src="src/android/res/drawable-xxxhdpi/snapshot_.png" target-dir="res/drawable-xxxhdpi" />
+    <source-file src="src/android/res/drawable-xxxhdpi/blow_level_progress.png" target-dir="res/drawable-xxxhdpi" />
+    <source-file src="src/android/res/drawable-xxxhdpi/blow_level_track.png" target-dir="res/drawable-xxxhdpi" />
   </platform>
 </plugin>
