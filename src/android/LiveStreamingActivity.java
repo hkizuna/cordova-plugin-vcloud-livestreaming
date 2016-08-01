@@ -27,6 +27,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,7 +62,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
   private static Context mContext;
   private String mUrl;
   private String mTitle;
-  private lsSurfaceView mStreamingView;
+  private LiveSurfaceView mStreamingView;
   private FrameLayout mControlOverlay;
   private RelativeLayout mTopView;
   private RelativeLayout mBottomView;
@@ -73,6 +74,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
   private ImageButton mQualityBtn;
 
   private ImageButton mMicBtn;
+  private ProgressBar mBlowLevelProgress;
   private ImageButton mChannelBtn;
   private ImageButton mSnapshotBtn;
   private static TextView mChannelText;
@@ -119,7 +121,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.activity_livestreaming);
 
-    mStreamingView = (lsSurfaceView) findViewById(R.id.streamingView);
+    mStreamingView = (LiveSurfaceView) findViewById(R.id.streamingView);
     mStreamingView.setOnClickListener(mOnClickEvent);
 
     mControlOverlay = (FrameLayout) findViewById(R.id.controlOverlay);
@@ -150,6 +152,8 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
     mMicBtn = (ImageButton) findViewById(R.id.micBtn);
     mMicBtn.setOnClickListener(mOnClickEvent);
 
+    mBlowLevelProgress = (ProgressBar) findViewById(R.id.blowLevelProgress);
+
     mChannelBtn = (ImageButton) findViewById(R.id.channelBtn);
     mChannelBtn.setOnClickListener(mOnClickEvent);
 
@@ -163,6 +167,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
   private void initMediaCapture() {
     initCameraSupportResolution(mQuality, mCameraPosition);
     mLSMediaCapture = new lsMediaCapture(this, mContext, mPreviewWidth, mPreviewHeight);
+    mStreamingView.setPreviewSize(mPreviewWidth, mPreviewHeight);
     mStreamingOn = false;
     mPreviewOn = false;
     mStreamingStarted = false;
@@ -577,30 +582,31 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
 
   private Timer blowLevelTimer;
   private AudioRecord audioRecorder;
-  private float blowLevel;
+  private int blowLevel;
   private int minBufferSize;
   class BlowLevelDetectTask extends TimerTask {
     @Override
     public void run() {
       short[] buffer = new short[minBufferSize];
       audioRecorder.read(buffer, 0, minBufferSize);
-      int rawblowLevel = 0;
       for (short s : buffer) {
         if (Math.abs(s) > 20000) {
-          rawblowLevel = Math.abs(s);
+          blowLevel = Math.abs(s);
           break;
         }
       }
 
-      blowLevel = rawblowLevel/33000.0f;
-//      Log.d("BlowLevelDetection", ""+ blowLevel);
+      mBlowLevelProgress.setProgress(blowLevel);
+      Log.d("BlowLevelDetection", ""+ blowLevel);
     }
   }
 
   private void initBlowLevelDetection() {
     minBufferSize = AudioRecord.getMinBufferSize(8000,AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
     audioRecorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 8000,AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, minBufferSize);
-    blowLevel = 0.0f;
+    blowLevel = 0;
+    mBlowLevelProgress.setMax(33000);
+    mBlowLevelProgress.setProgress(0);
     audioRecorder.startRecording();
     blowLevelTimer = new Timer();
     blowLevelTimer.schedule(new BlowLevelDetectTask(), 0, 500);

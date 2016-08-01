@@ -135,6 +135,7 @@
 
     <source-file src="src/android/LiveStreaming.java" target-dir="src/xwang/cordova/vcloud/livestreaming" />
     <source-file src="src/android/LiveStreamingActivity.java" target-dir="src/xwang/cordova/vcloud/livestreaming" />
+    <source-file src="src/android/LiveSurfaceView.java" target-dir="src/xwang/cordova/vcloud/livestreaming" />
     <source-file src="src/android/libs/Livestreaming.jar" target-dir="libs" />
     <source-file src="src/android/libs/arm64-v8a/liblivestreaming.so" target-dir="libs/arm64-v8a" />
     <source-file src="src/android/libs/armeabi/liblivestreaming.so" target-dir="libs/armeabi" />
