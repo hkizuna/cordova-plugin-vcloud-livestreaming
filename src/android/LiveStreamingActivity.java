@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.media.AudioFormat;
+import android.media.AudioRecord;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,6 +39,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
 
 
@@ -107,6 +111,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
 
     initUI();
     initMediaCapture();
+    initBlowLevelDetection();
   }
 
   private void initUI() {
@@ -425,6 +430,7 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
   @Override
   protected void onDestroy() {
     clear();
+    stopBlowLevelDetection();
     super.onDestroy();
   }
 
@@ -567,6 +573,43 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
     Uri contentUri = Uri.fromFile(imageFile);
     mediaScanIntent.setData(contentUri);
     mContext.sendBroadcast(mediaScanIntent);
+  }
+
+  private Timer blowLevelTimer;
+  private AudioRecord audioRecorder;
+  private float blowLevel;
+  private int minBufferSize;
+  class BlowLevelDetectTask extends TimerTask {
+    @Override
+    public void run() {
+      short[] buffer = new short[minBufferSize];
+      audioRecorder.read(buffer, 0, minBufferSize);
+      int rawblowLevel = 0;
+      for (short s : buffer) {
+        if (Math.abs(s) > 20000) {
+          rawblowLevel = Math.abs(s);
+          break;
+        }
+      }
+
+      blowLevel = rawblowLevel/33000.0f;
+//      Log.d("BlowLevelDetection", ""+ blowLevel);
+    }
+  }
+
+  private void initBlowLevelDetection() {
+    minBufferSize = AudioRecord.getMinBufferSize(8000,AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
+    audioRecorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 8000,AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, minBufferSize);
+    blowLevel = 0.0f;
+    audioRecorder.startRecording();
+    blowLevelTimer = new Timer();
+    blowLevelTimer.schedule(new BlowLevelDetectTask(), 0, 500);
+  }
+
+  private void stopBlowLevelDetection() {
+    if (blowLevelTimer != null) {
+      blowLevelTimer.cancel();
+    }
   }
 
   @Override

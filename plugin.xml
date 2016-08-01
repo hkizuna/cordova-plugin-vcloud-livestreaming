@@ -141,6 +141,7 @@
     <source-file src="src/android/libs/armeabi-v7a/liblivestreaming.so" target-dir="libs/armeabi-v7a" />
     <source-file src="src/android/libs/x86/liblivestreaming.so" target-dir="libs/x86" />
     <source-file src="src/android/res/layout/activity_livestreaming.xml" target-dir="res/layout" />
+    <source-file src="src/android/res/drawable/blow_level.xml" target-dir="res/drawable" />
     <source-file src="src/android/res/drawable-hdpi/bolt.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-hdpi/pause.png" target-dir="res/drawable-hdpi" />
     <source-file src="src/android/res/drawable-hdpi/play.png" target-dir="res/drawable-hdpi" />
