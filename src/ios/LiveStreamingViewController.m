@@ -642,9 +642,7 @@ float randomFloat(float Min, float Max){
     [self presentViewController:alertController animated:YES completion:nil];
   }
   else {
-    [self.mediaCapture snapShotWithCompletionBlock:^(UIImage *snapImage) {
-      UIImageWriteToSavedPhotosAlbum(snapImage, nil, nil, nil);
-      PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
       BOOL authorized = NO;
       switch (status) {
         case PHAuthorizationStatusDenied:
@@ -659,6 +657,9 @@ float randomFloat(float Min, float Max){
 
       UIAlertController *alertController = NULL;
       if (authorized) {
+        [self.mediaCapture snapShotWithCompletionBlock:^(UIImage *snapImage) {
+          UIImageWriteToSavedPhotosAlbum(snapImage, nil, nil, nil);
+        }];
         alertController = [UIAlertController alertControllerWithTitle:@"截图已保存到相册" message:nil preferredStyle:UIAlertControllerStyleAlert];
       }
       else {
