@@ -395,7 +395,6 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
     mPlayBtn.setVisibility(View.VISIBLE);
     mTopView.setVisibility(View.VISIBLE);
     mBottomView.setVisibility(View.VISIBLE);
-    mChannelText.setVisibility(View.VISIBLE);
   }
 
   public void hide() {
@@ -404,7 +403,6 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
     mPlayBtn.setVisibility(View.INVISIBLE);
     mTopView.setVisibility(View.INVISIBLE);
     mBottomView.setVisibility(View.INVISIBLE);
-    mChannelText.setVisibility(View.INVISIBLE);
   }
 
   @Override

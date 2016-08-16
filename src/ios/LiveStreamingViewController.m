@@ -376,9 +376,9 @@ float randomFloat(float Min, float Max){
 
   [self.controlOverlay addSubview:self.topControlView];
   [self.controlOverlay addSubview:self.bottomControlView];
-  [self.controlOverlay addSubview:self.channelTextView];
   [self.controlOverlay addSubview:self.playButton];
   [self.streamingOverlay addSubview:self.controlOverlay];
+  [self.streamingOverlay addSubview:self.channelTextView];
 
   [self.view addSubview:self.streamingView];
   [self.view addSubview:self.streamingOverlay];
