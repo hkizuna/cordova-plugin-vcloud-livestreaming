@@ -242,7 +242,12 @@ LSVideoStreamingQuality currentStreamingQuality = LS_VIDEO_QUALITY_SUPER;
 //  peakPowerForChannel += 160.0f;
 //  peakPowerForChannel /= 160.0f;
 //  NSLog(@"%f", peakPowerForChannel);
-  [self.blowLevelProgress setProgress:1 - blowLevel animated:YES];
+  if (micOn) {
+    [self.blowLevelProgress setProgress:1 - blowLevel animated:YES];
+  }
+  else {
+    [self.blowLevelProgress setProgress:1 animated:NO];
+  }
 }
 
 float randomFloat(float Min, float Max){

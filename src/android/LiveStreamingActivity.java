@@ -594,8 +594,13 @@ public class LiveStreamingActivity extends Activity implements lsMessageHandler{
         }
       }
 
-      mBlowLevelProgress.setProgress(blowLevel);
-      Log.d("BlowLevelDetection", ""+ blowLevel);
+      if (micOn) {
+        mBlowLevelProgress.setProgress(blowLevel);
+      }
+      else {
+        mBlowLevelProgress.setProgress(0);
+      }
+      // Log.d("BlowLevelDetection", ""+ blowLevel);
     }
   }
 
